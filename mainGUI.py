@@ -212,6 +212,7 @@ def process_frame():
     cv2.line(frame, (0, line_position),
              (frame.shape[1], line_position),
              (0, 255, 255), 2)
+   
 
     for box in boxes_ids:
         x, y, w, h, id = box
@@ -234,6 +235,9 @@ def process_frame():
             app.car_left()
 
         car_positions[id] = cy
+
+    cv2.putText(frame, f"Available spots: {app.max_capacity - app.car_count}", (50,50),
+    cv2.FONT_HERSHEY_SIMPLEX, 1, (0,255,0), 2)
 
     cv2.imshow("Parking Detection", frame)
 
