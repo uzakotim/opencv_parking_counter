@@ -47,51 +47,124 @@ class Tracker:
 class ParkingApp:
     def __init__(self, root):
         self.root = root
-        self.root.title("Parking Counter")
+        self.root.title("Smart Parking System")
+        self.root.attributes("-fullscreen", True)
+        width = self.root.winfo_screenwidth()
+        height = self.root.winfo_screenheight()
+        self.root.geometry(f"{width}x{height}+0+0")
+        self.root.configure(bg="#0f172a")  # dark navy
+        self.root.bind("<Escape>", lambda e: self.root.attributes("-fullscreen", False))
 
         self.car_count = 0
         self.max_capacity = 10
 
-        self.label = tk.Label(root, text="0", font=("Arial", 60), fg="blue")
-        self.label.pack(pady=20)
+        # ===== TITLE =====
+        self.title_label = tk.Label(
+            root,
+            text="SMART PARKING",
+            font=("Helvetica", 18, "bold"),
+            fg="white",
+            bg="#0f172a"
+        )
+        self.title_label.pack(pady=(30, 10))
 
+        # ===== CARD FRAME =====
+        self.card = tk.Frame(root, bg="#1e293b", bd=0)
+        self.card.pack(padx=30, pady=20, fill="both", expand=True)
+
+        # ===== AVAILABLE TEXT =====
+        self.available_text = tk.Label(
+            self.card,
+            text="Available Spots",
+            font=("Helvetica", 14),
+            fg="#94a3b8",
+            bg="#1e293b"
+        )
+        self.available_text.pack(pady=(40, 10))
+
+        # ===== BIG NUMBER =====
+        self.counter_label = tk.Label(
+            self.card,
+            text="0",
+            font=("Helvetica", 360, "bold"),
+            fg="#22c55e",
+            bg="#1e293b"
+        )
+        self.counter_label.pack()
+
+        # ===== STATUS BADGE =====
+        self.status_label = tk.Label(
+            self.card,
+            text="AVAILABLE",
+            font=("Helvetica", 120, "bold"),
+            fg="white",
+            bg="#22c55e",
+            padx=15,
+            pady=5
+        )
+        self.status_label.pack(pady=20)
+
+        # ===== CAPACITY INFO =====
         self.capacity_label = tk.Label(
-            root, text=f"Max Capacity: {self.max_capacity}",
-            font=("Arial", 14)
+            root,
+            text="Capacity: 10",
+            font=("Helvetica", 11),
+            fg="#94a3b8",
+            bg="#0f172a"
         )
         self.capacity_label.pack()
 
+        # ===== SETTINGS BUTTON =====
         self.settings_button = tk.Button(
-            root, text="⚙ Settings", command=self.change_capacity
+            root,
+            text="⚙ Settings",
+            font=("Helvetica", 11, "bold"),
+            fg="#100625",
+            bg="#3b82f6",
+            activebackground="#2563eb",
+            activeforeground="white",
+            relief="flat",
+            padx=20,
+            pady=8,
+            command=self.change_capacity
         )
-        self.settings_button.pack(pady=10)
-
-        self.status_label = tk.Label(root, text="", font=("Arial", 16))
-        self.status_label.pack()
+        self.settings_button.pack(pady=20)
 
         self.update_display()
 
+    # =============================
     def update_display(self):
-        self.label.config(text=str(self.max_capacity - self.car_count))
-        self.capacity_label.config(
-            text=f"Max Capacity: {self.max_capacity}"
-        )
+        available = self.max_capacity - self.car_count
+
+        self.counter_label.config(text=str(available))
+        self.capacity_label.config(text=f"Capacity: {self.max_capacity}")
 
         if self.car_count >= self.max_capacity:
-            self.status_label.config(text="PARKING FULL", fg="red")
+            self.status_label.config(
+                text="FULL",
+                bg="#ef4444"
+            )
+            self.counter_label.config(fg="#ef4444")
         else:
-            self.status_label.config(text="AVAILABLE", fg="green")
+            self.status_label.config(
+                text="AVAILABLE",
+                bg="#22c55e"
+            )
+            self.counter_label.config(fg="#22c55e")
 
+    # =============================
     def car_entered(self):
         if self.car_count < self.max_capacity:
             self.car_count += 1
         self.update_display()
 
+    # =============================
     def car_left(self):
         if self.car_count > 0:
             self.car_count -= 1
         self.update_display()
 
+    # =============================
     def change_capacity(self):
         new_capacity = simpledialog.askinteger(
             "Settings",
@@ -101,7 +174,6 @@ class ParkingApp:
         if new_capacity:
             self.max_capacity = new_capacity
             self.update_display()
-
 # -----------------------------
 # MAIN
 # -----------------------------
